@@ -12,7 +12,6 @@ const productRoutes = require('../controllers/product')
 
 const orderRoutes = require('../controllers/order');
 
-
 let morganFormat = 'tiny'
 if (app.get('env') === 'production') { // process.env.NODE_ENV
     app.set('trust proxy', 1) // trust first proxy

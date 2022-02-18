@@ -1,4 +1,4 @@
-
+const db = require('../utils/db')
 
 module.exports = {
     // get ratings and no. of comments?
@@ -8,7 +8,7 @@ module.exports = {
 
 
         try {
-            
+
 
         } catch (error) {
             console.error('ERR details', error)
@@ -24,7 +24,18 @@ module.exports = {
 
 
         try {
-            
+            // sql select statment
+            let sql = "SELECT `ProductName`, `UnitPrice`, `IsVegan` FROM `Product`";
+
+            db.connection.query(sql, function (error, results, fields) {
+
+                if (error) {
+                    res.sendStatus(400)
+                } else {
+                    res.send(results);
+                }
+
+            })
 
         } catch (error) {
             console.error('ERR details', error)
@@ -39,7 +50,7 @@ module.exports = {
 
 
         try {
-            
+
 
         } catch (error) {
             console.error('ERR details', error)
@@ -54,7 +65,7 @@ module.exports = {
 
 
         try {
-            
+
 
         } catch (error) {
             console.error('ERR details', error)
