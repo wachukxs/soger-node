@@ -12,7 +12,7 @@ module.exports = {
 
         } catch (error) {
             console.error('ERR details', error)
-            res.sendStatus(400)
+            res.sendStatus(500)
         }
 
     },
@@ -24,22 +24,11 @@ module.exports = {
 
 
         try {
-            // sql select statment
-            let sql = "SELECT `ProductName`, `UnitPrice`, `IsVegan` FROM `Product`";
-
-            db.connection.query(sql, function (error, results, fields) {
-
-                if (error) {
-                    res.sendStatus(400)
-                } else {
-                    res.send(results);
-                }
-
-            })
+            
 
         } catch (error) {
             console.error('ERR details', error)
-            res.sendStatus(400)
+            res.sendStatus(500)
         }
 
     },
@@ -54,7 +43,7 @@ module.exports = {
 
         } catch (error) {
             console.error('ERR details', error)
-            res.sendStatus(400)
+            res.sendStatus(500)
         }
 
     },

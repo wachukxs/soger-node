@@ -1,4 +1,5 @@
 
+const db = require('../utils/db')
 
 module.exports = {
     // get ratings and no. of comments?
@@ -8,11 +9,23 @@ module.exports = {
 
 
         try {
-            
+
+            // sql select statment
+            let sql = "SELECT `ProductName`, `UnitPrice`, `IsVegan` FROM `Product`";
+
+            db.connection.query(sql, function (error, results, fields) {
+
+                if (error) {
+                    res.sendStatus(400)
+                } else {
+                    res.send(results);
+                }
+
+            })
 
         } catch (error) {
             console.error('ERR details', error)
-            res.sendStatus(400)
+            res.sendStatus(500)
         }
 
     },
@@ -20,15 +33,24 @@ module.exports = {
 
     async getSingle(req, res) {
 
-        console.log('what was searched', req.query);
-
-
         try {
+            let sql = "SELECT `ProductName`, `UnitPrice`, `IsVegan` FROM `Product` WHERE `ProductId` = ?"
             
+            db.connection.query(sql, [req.params.id], function (error, results, fields) {
+
+                if (error) {
+                    res.sendStatus(400)
+                } else if (results.length > 0) {
+                    res.send(results);
+                } else { // if id does not exists
+                    res.sendStatus(404)
+                }
+
+            })
 
         } catch (error) {
             console.error('ERR details', error)
-            res.sendStatus(400)
+            res.sendStatus(500)
         }
 
     },
