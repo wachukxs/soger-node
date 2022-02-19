@@ -22,3 +22,7 @@ if filtering by IsVegan, the only provide minValue [boolean]
 
 
 in SeedData.sql ... just fixed the quotes, making OrderNumber strings
+
+
+For FEAT: add items to an order
+add products to an order that wasn't existing in the order

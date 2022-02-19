@@ -122,7 +122,58 @@ module.exports = {
 
     async addToOrder(req, res) {
 
-        console.log('what was addToOrder', req.query);
+        console.log('what was addToOrder', req.body);
+        // req.params.id
+
+        // insert new order items, the re-calculate total
+
+
+        try {
+
+            let sql = "INSERT INTO `OrderItem` (`ProductId`, `Quantity`, `UnitPrice`, `OrderId`) VALUES ?";
+            let _OrderId = Number(req.params.id)
+
+                    let newValue = req.body.products.map(_v => Object.values(({..._v, UnitPrice: 0, OrderId: _OrderId }))) // to do, unitPrice, select prince for product
+                    db.connection.query(sql, [newValue], async function (error, results, fields) {
+
+                        if (error) {
+                            console.log('err: 344', error);
+                            if (error.code == "ER_DUP_ENTRY") {
+                                res.status(400).send({message: "One of the Product already exists in the selected order. Only include products that do not exists in an order. Or update the product details in the selected order"})
+                            } else {
+                                res.sendStatus(400)
+                            }
+                            
+                        } else {
+                            // if an error throws here, we should handle it
+
+                            // query database
+                            const [rows1, fields1] = await db.connection.promise().query('UPDATE OrderItem SET `UnitPrice` = (SELECT UnitPrice FROM `Product` WHERE Product.`ProductId` = OrderItem.ProductId) WHERE OrderId = ?', [_OrderId]);
+                            console.log('rows1', rows1, 'fields1', fields1);
+
+                        
+                            const [rows2, fields2] = await db.connection.promise().query('UPDATE `Order` SET `TotalAmount` = (SELECT SUM(OI.`UnitPrice` * OI.`Quantity`) FROM `Product` P RIGHT JOIN OrderItem OI ON OI.ProductId = P.ProductId WHERE OI.`OrderId` = ?) WHERE `OrderId` = ?', [_OrderId, _OrderId]);
+
+                            console.log('rows2', rows2, 'fields2', fields2);
+                            // run update on UnitPrice in OrderItem
+                            // run update on TotalAmount in Order
+        
+                            res.sendStatus(200);
+                        }
+        
+                    })
+
+        } catch (error) {
+            console.error('ERR details', error)
+            res.sendStatus(500)
+        }
+
+    },
+
+    // not a basic requirement
+    async editOrderItem(req, res) {
+
+        console.log('what was editOrderItem', req.query);
 
 
         try {
@@ -130,7 +181,7 @@ module.exports = {
 
         } catch (error) {
             console.error('ERR details', error)
-            res.sendStatus(500)
+            res.sendStatus(400)
         }
 
     },
