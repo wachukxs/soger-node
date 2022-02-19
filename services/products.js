@@ -5,7 +5,7 @@ module.exports = {
     // get ratings and no. of comments?
     async getAll(req, res) {
 
-        console.log('what was searched', req.query);
+        console.log('what was products.getAll', req.query);
 
 
         try {

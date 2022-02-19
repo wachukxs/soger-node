@@ -3,7 +3,6 @@ const express = require('express');
 const app = express();
 const cors = require('cors')
 app.use(cors())
-// const bodyParser = require('body-parser'); // https://stackoverflow.com/a/24330353/9259701
 const cookieParser = require('cookie-parser')
 const morgan = require('morgan');
 
@@ -27,8 +26,6 @@ app.locals.title = 'Soger TakeHome';
 
 app.locals.email = process.env.THE_EMAIL;
 
-// app.use(bodyParser.urlencoded({ extended: false }));
-// app.use(bodyParser.json());
 app.use(cookieParser(process.env.SESSION_SECRET))
 
 
