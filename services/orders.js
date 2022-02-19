@@ -15,15 +15,7 @@ module.exports = {
             let sql = "INSERT INTO `Order` (`OrderNumber`, `CustomerId`, `TotalAmount`) VALUES ((SELECT * FROM (SELECT CONVERT(`OrderNumber`, UNSIGNED) + 1 FROM `Order` ORDER BY `OrderId` DESC LIMIT 1) Order_Num), ?, ?)";
             /**
              * 
-             * what was passed {
-                CustomerId: 1,
-                products: [
-                    { ProductId: 2, Quantity: 3 },
-                    { ProductId: 3, Quantity: 45 },
-                    { ProductId: 1, Quantity: 23 }
-                ]
-                }
-
+             * 
              */
 
             db.connection.query(sql, [req.body.CustomerId, 0], function (error, results, fields) {
@@ -80,7 +72,46 @@ module.exports = {
 
 
         try {
-            
+            // sql select statment
+            // filterable by start and end date and is vegan
+            let sql = " \
+                SELECT *, `Order`.`CustomerId`, `Order`.`OrderDate`, `Order`.`DeliveryDate`, `Order`.`TotalAmount` FROM `OrderItem` \
+                RIGHT OUTER JOIN \
+                `Order` \
+                ON \
+                `Order`.`OrderId` = `OrderItem`.`OrderId` \
+                RIGHT OUTER JOIN \
+                `Product` \
+                ON \
+                `OrderItem`.`ProductId` = `Product`.`ProductId` \
+            ";
+
+            // TODO: improve
+            if (Object.keys(req.query).length > 0) {
+                sql += (req.query.filterBy && req.query.filterBy == "OrderDate" ? " WHERE \`OrderDate\` " + (req.query.minValue ? ` > "${req.query.minValue}" ` + (req.query.maxValue ? ` ${ req.query.maxValue && req.query.minValue ? ' AND \`OrderDate\` ' : ''} < "${req.query.maxValue}" ` : '') : '') 
+                : ''
+                )
+
+
+                // check that 
+                sql += (req.query.filterBy && req.query.filterBy == "IsVegan" ? " WHERE \`Product\`.\`IsVegan\` " + (req.query.minValue ? ` = ${Boolean(req.query.minValue)} ` : '') : '')
+
+                // do order by later
+            }
+            // WHERE `Order`.`OrderDate` > "2021-12-31T21:00:00.000Z"
+
+            db.connection.query(sql, function (error, results, fields) {
+
+                if (error) {
+                    console.log('err: orders.getAll', error);
+                    res.sendStatus(400)
+                } else {
+                    console.log('query that ran', sql);
+                    // we should send more info about the response we're sending. result count, etc.
+                    res.send(results);
+                }
+
+            })
 
         } catch (error) {
             console.error('ERR details', error)
