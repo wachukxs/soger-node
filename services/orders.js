@@ -193,6 +193,39 @@ module.exports = {
 
         try {
 
+            // run multiple queries
+            // vegan
+            let sql = " \
+                SELECT `Order`.`OrderId`,`OrderNumber`,`CustomerId`,`OrderDate`,`DeliveryDate`,`TotalAmount` FROM `Order` \
+                RIGHT JOIN \
+                `OrderItem` \
+                ON \
+                `Order`.`OrderId` = `OrderItem`.`OrderId` \
+                RIGHT JOIN \
+                `Product` \
+                ON \
+                `OrderItem`.`ProductId` = `Product`.`ProductId` \
+                WHERE `Product`.`IsVegan` = true \
+            ";
+
+            sql += "; SELECT CustomerId, SUM(`TotalAmount`) AS TotalAmount FROM `Order` WHERE OrderDate BETWEEN '2022-01-01 00:00:00' AND '2022-01-31 00:00:00'  GROUP BY `CustomerId`  ORDER BY `TotalAmount` DESC LIMIT 5"
+
+
+            db.connection.query(sql, function (error, results, fields) {
+
+                if (error) {
+                    console.log('err: orders.getReport', error);
+                    res.sendStatus(400)
+                } else {
+                    console.log('query that ran', sql);
+                    // we should send more info about the response we're sending. result count, etc.
+                    res.send({
+                        vaganOrder: results[0],
+                        bigMonthlySpeder: results[1]
+                    });
+                }
+
+            })
 
         } catch (error) {
             console.error('ERR details', error)
